@@ -3,6 +3,8 @@
  * @brief 射的銃メインプログラム
  */
 #include <Arduino.h>
+#include "irShooter.hpp"
+#include "reactor.hpp"
 
 #define PIN_IN_TRIGGER  14
 #define PIN_OUT_IR      13
