@@ -6,8 +6,12 @@
 #include "irShooter.hpp"
 #include "reactor.hpp"
 
-#define PIN_IN_TRIGGER  14
-#define PIN_OUT_IR      13
+#define PIN_IN_TRIGGER        14
+#define PIN_OUT_IR            13
+#define MAGAGINE_CAPACITY     20
+#define INITIAL_BULLETS_NUM   MAGAGINE_CAPACITY
+
+IrShooter ir_shooter(PIN_OUT_IR, MAGAGINE_CAPACITY, INITIAL_BULLETS_NUM);
 
 /**
  * @brief セットアップ関数
@@ -25,14 +29,21 @@ void setup(void) {
  * @return None
  */
 void loop(void) {
+  static bool pre_is_trigger_on = false;
+
   if(digitalRead(PIN_IN_TRIGGER)){
-    digitalWrite(PIN_OUT_IR, HIGH);
-    Serial.println("trig on");
+    if(!pre_is_trigger_on){
+      //  チャタリング除去対応
+      delay(100);
+      if(digitalRead(PIN_IN_TRIGGER)){
+        ir_shooter.shoot();
+        Serial.println("# shoot (remain bullets = " + String(ir_shooter.get_bullets_num()) + ")");
+      }
+    }
+    pre_is_trigger_on = true;
   }else{
-    digitalWrite(PIN_OUT_IR, LOW);
-    Serial.println("trig off");
+    pre_is_trigger_on = false;
   }
-  delay(1000);
 }
 
 /**
@@ -41,7 +52,5 @@ void loop(void) {
  * @return None
  */
 static void initializePins(){
-  digitalWrite(PIN_OUT_IR, LOW);
-  pinMode(PIN_OUT_IR, OUTPUT);
   pinMode(PIN_IN_TRIGGER, INPUT);
 }
