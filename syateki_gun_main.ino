@@ -12,6 +12,7 @@
 #define INITIAL_BULLETS_NUM   MAGAGINE_CAPACITY
 
 IrShooter ir_shooter(PIN_OUT_IR, MAGAGINE_CAPACITY, INITIAL_BULLETS_NUM);
+Reactor reactor;
 
 /**
  * @brief セットアップ関数
@@ -21,6 +22,7 @@ IrShooter ir_shooter(PIN_OUT_IR, MAGAGINE_CAPACITY, INITIAL_BULLETS_NUM);
 void setup(void) {
   Serial.begin(115200);
   initializePins();
+  reactor.display_int(1234567890);
 }
 
 /**

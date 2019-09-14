@@ -6,15 +6,22 @@
 #ifndef REACTOR_HPP
 #define REACTOR_HPP
 
+#include "display.hpp"
+
 /**
  * @class Reactor
  * @brief
  */
 class Reactor {
 private:
+  Display display;
 
 public:
-  Reactor(){};
+  Reactor();
+  void sound_fire();
+  void sound_hit();
+  void vibrate(unsigned int time);
+  void display_int(int disp_num);
 };
 
 #endif
