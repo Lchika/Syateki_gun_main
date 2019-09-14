@@ -3,6 +3,10 @@
 Reactor::Reactor(){
 };
 
+void Reactor::react_to_fire(){
+  speaker.play_file(0x01);
+  vibrationMotor.on(200);
+}
 
 void Reactor::sound_fire(){
 

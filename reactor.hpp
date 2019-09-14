@@ -7,6 +7,8 @@
 #define REACTOR_HPP
 
 #include "display.hpp"
+#include "speaker.hpp"
+#include "vibrationMotor.hpp"
 
 /**
  * @class Reactor
@@ -14,10 +16,14 @@
  */
 class Reactor {
 private:
+  static unsigned char constexpr VOL = 0x10;
   Display display;
+  Speaker speaker = Speaker(VOL);
+  VibrationMotor vibrationMotor;
 
 public:
   Reactor();
+  void react_to_fire();
   void sound_fire();
   void sound_hit();
   void vibrate(unsigned int time);

@@ -6,7 +6,7 @@
 #ifndef SPEAKER_HPP
 #define SPEAKER_HPP
 
-#include <DFRobotDFPlayerMini.h>
+#include <Arduino.h>
 
 /**
  * @class Speaker
@@ -14,12 +14,11 @@
  */
 class Speaker {
 private:
-  SoftwareSerial *softwareSerial;
-  DFRobotDFPlayerMini dFPlayer;
+  HardwareSerial serial_voice_module = HardwareSerial(2);
 
 public:
-  Speaker();
-  void sound_file(unsigned int file_num);
+  Speaker(unsigned char vol);
+  void play_file(unsigned char file_num);
 };
 
 #endif

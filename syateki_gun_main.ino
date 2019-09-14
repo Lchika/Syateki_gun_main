@@ -23,6 +23,7 @@ void setup(void) {
   Serial.begin(115200);
   initializePins();
   reactor.display_int(1234567890);
+  reactor.react_to_fire();
 }
 
 /**
