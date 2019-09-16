@@ -70,5 +70,10 @@ Display::Display(){
 void Display::show_int(int16_t x, int16_t y, int disp_num){
   display.setCursor(x, y);
   display.setTextColor(LED_GREEN_HIGH);
+  display.setTextSize(TEXT_SIZE);
   display.print(disp_num);
+}
+
+void Display::clear_display(){
+  display.clear();
 }

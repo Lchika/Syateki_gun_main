@@ -22,8 +22,6 @@ Reactor reactor;
 void setup(void) {
   Serial.begin(115200);
   initializePins();
-  reactor.display_int(1234567890);
-  reactor.react_to_fire();
 }
 
 /**
@@ -34,13 +32,14 @@ void setup(void) {
 void loop(void) {
   static bool pre_is_trigger_on = false;
 
-  if(digitalRead(PIN_IN_TRIGGER)){
+  if(digitalRead(PIN_IN_TRIGGER) == LOW){
     if(!pre_is_trigger_on){
       //  チャタリング除去対応
       delay(100);
-      if(digitalRead(PIN_IN_TRIGGER)){
+      if(digitalRead(PIN_IN_TRIGGER) == LOW){
         ir_shooter.shoot();
         Serial.println("# shoot (remain bullets = " + String(ir_shooter.get_bullets_num()) + ")");
+        reactor.react_to_fire(ir_shooter.get_bullets_num());
       }
     }
     pre_is_trigger_on = true;

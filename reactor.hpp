@@ -23,7 +23,8 @@ private:
 
 public:
   Reactor();
-  void react_to_fire();
+  void react_to_fire(int bullets_num);
+  void react_to_hit();
   void sound_fire();
   void sound_hit();
   void vibrate(unsigned int time);

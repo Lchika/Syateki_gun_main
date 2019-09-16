@@ -40,10 +40,12 @@ private:
   // to use the microSD card (see the image drawing example)
   //#pragma message "Using HWSPI"
   //Adafruit_SSD1331 display = Adafruit_SSD1331(&SPI, cs, dc, rst);
+  static uint8_t constexpr TEXT_SIZE = 6;
 
 public:
   Display();
   void show_int(int16_t x, int16_t y, int disp_num);
+  void clear_display();
 };
 
 #endif
