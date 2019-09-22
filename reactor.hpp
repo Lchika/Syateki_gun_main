@@ -9,6 +9,7 @@
 #include "display.hpp"
 #include "speaker.hpp"
 #include "vibrationMotor.hpp"
+#include "score.hpp"
 
 /**
  * @class Reactor
@@ -19,16 +20,18 @@ private:
   static unsigned char constexpr VOL = 0x10;
   Display display;
   Speaker speaker = Speaker(VOL);
+  Score score;
   VibrationMotor vibrationMotor;
+  void sound_fire();
+  void sound_hit();
 
 public:
   Reactor();
   void react_to_fire(int bullets_num);
   void react_to_hit();
-  void sound_fire();
-  void sound_hit();
   void vibrate(unsigned int time);
   void display_int(int disp_num);
+  void reset();
 };
 
 #endif
