@@ -135,7 +135,9 @@ static int shoot(){
   int target_num = get_root();
   Serial.println("target_num = " + String(target_num));
   //  弾数管理を更新する
-  ir_shooter.shoot();
+  if(!ir_shooter.shoot()){
+    Serial.println("<ERROR> remain bullets is None");
+  }
   Serial.println("# shoot (remain bullets = " + String(ir_shooter.get_bullets_num()) + ")");
   //  発射関係の演出を行う
   reactor.react_to_fire(ir_shooter.get_bullets_num());
