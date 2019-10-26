@@ -101,7 +101,7 @@ static void initializePins(void){
  * @return None
  */
 static int get_root(void){
-  const char* host = "192.168.100.114";
+  const char* host = "192.168.100.117";
   
   DebugPrint("connecting to ");
   DebugPrint(host);
@@ -112,11 +112,11 @@ static int get_root(void){
     DebugPrint("connection failed");
     return -1;
   }
-  String url = "/";
+  String url = "/shoot/1";
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
     "Host: " + host + "\r\n" + 
     "Connection: close\r\n\r\n");
-  delay(1000);
+  delay(1500);
 
   // 返ってきた情報の解析
   bool is_start_body = false;
