@@ -52,7 +52,7 @@
 #include "display.hpp"
 
 Display::Display(){
-  delay(1000);
+  //delay(1000);
   // Default is 40Mhz
   display.begin(40000000);
   Serial.println("For extra speed, try 80Mhz, may be less stable");
@@ -61,9 +61,9 @@ Display::Display(){
   display.setAddrWindow(0, 0, mw, mh);
   // Test full bright of all LEDs. If brightness is too high
   // for your current limit (i.e. USB), decrease it.
-  display.fillScreen(LED_WHITE_HIGH);
-  display.show();
-  delay(3000);
+  //display.fillScreen(LED_WHITE_HIGH);
+  //display.show();
+  //delay(3000);
   display.clear();
 };
 
