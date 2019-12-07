@@ -3,9 +3,14 @@
 Reactor::Reactor(){
 };
 
+Reactor::Reactor(int initial_bullets_num){
+  display.clear_display();
+  display_int(initial_bullets_num);
+};
+
 void Reactor::react_to_fire(int bullets_num){
   display.clear_display();
-  display.show_int(0, 0, bullets_num);
+  display_int(bullets_num);
   sound_fire();
   vibrationMotor.on(200);
 }
@@ -28,10 +33,15 @@ void Reactor::vibrate(unsigned int time){
 }
 
 void Reactor::display_int(int disp_num){
-  display.show_int(0, 0, disp_num);
+  int x_for_center = DISP_X;
+  if(disp_num < 10 && disp_num > -1){
+    x_for_center += 18;
+  }
+  display.show_int(x_for_center, DISP_Y, disp_num);
 }
 
-void Reactor::reset(){
+void Reactor::reset(int initial_bullets_num){
   display.clear_display();
+  display_int(initial_bullets_num);
   score.reset();
 }

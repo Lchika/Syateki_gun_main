@@ -18,6 +18,8 @@
 class Reactor {
 private:
   static unsigned char constexpr VOL = 0x10;
+  static constexpr uint8_t DISP_X = 14;
+  static constexpr uint8_t DISP_Y = 10;
   Display display;
   Speaker speaker = Speaker(VOL);
   Score score;
@@ -27,11 +29,12 @@ private:
 
 public:
   Reactor();
+  Reactor(int initial_bullets_num);
   void react_to_fire(int bullets_num);
   void react_to_hit();
   void vibrate(unsigned int time);
   void display_int(int disp_num);
-  void reset();
+  void reset(int initial_bullets_num);
 };
 
 #endif

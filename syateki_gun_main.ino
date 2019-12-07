@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "irShooter.hpp"
 #include "reactor.hpp"
+#include "rotaryDipSwitch.hpp"
 
 //  内部関数宣言
 void setup(void);
@@ -21,6 +22,7 @@ static void reset_game(void);
 //  定数宣言
 static int constexpr PIN_IN_TRIGGER = 14;     //  トリガ入力ピン
 static int constexpr PIN_OUT_IR     = 13;     //  赤外線出力用ピン
+static std::array<uint8_t, 4> constexpr PINS_ROTARY_DIP = {25, 26, 34, 35};   //  ロータリーDIPスイッチピン
 static unsigned int constexpr MAGAGINE_CAPACITY   = 20;                 //  マガジン最大装填量
 static unsigned int constexpr INITIAL_BULLETS_NUM = MAGAGINE_CAPACITY;  //  初期弾数
 static int constexpr DELAY_WAIT_RESET_MS    = 100;    //  リセット待機用delay時間[ms]
@@ -29,6 +31,7 @@ static int constexpr TOTAL_RESET_TIME_LIMIT = 3000;   //  リセット待機用�
 //  変数宣言
 IrShooter ir_shooter(PIN_OUT_IR, MAGAGINE_CAPACITY, INITIAL_BULLETS_NUM);
 Reactor reactor;
+uint8_t gun_id = 0;
 
 //  関数定義
 /**
@@ -39,8 +42,13 @@ Reactor reactor;
 void setup(void) {
   BeginDebugPrint();
   initializePins();
+  gun_id = get_gun_id(PINS_ROTARY_DIP);
+  DebugPrint("gun_id = %d", gun_id);
   WiFi.begin("ROBOCON-AP1", "20190216-rc");
+  unsigned int try_recconect_count = 0;
   while(WiFi.status() != WL_CONNECTED){
+    try_recconect_count++;
+    if(try_recconect_count > 20) break;
     delay(500);
     DebugPrint(".");
   }
@@ -52,6 +60,7 @@ void setup(void) {
   } else {
     DebugPrint("WiFi connect process time out.");
   }
+  reactor.display_int(INITIAL_BULLETS_NUM);
 }
 
 /**
@@ -93,6 +102,9 @@ void loop(void) {
  */
 static void initializePins(void){
   pinMode(PIN_IN_TRIGGER, INPUT);
+  //for(auto rotary_pin : PINS_ROTARY_DIP){
+  //  pinMode(rotary_pin, INPUT);
+  //}
 }
 
 /**
@@ -112,7 +124,7 @@ static int get_root(void){
     DebugPrint("connection failed");
     return -1;
   }
-  String url = "/shoot/1";
+  String url = "/shoot/" + String(gun_id + 1);
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
     "Host: " + host + "\r\n" + 
     "Connection: close\r\n\r\n");
@@ -206,5 +218,10 @@ static void wait_by_pinlevel(int total_time_ms, int ref_pin, int delay_wait_ms, 
  */
 static void reset_game(void){
   ir_shooter.reload();
-  reactor.reset();
+  reactor.reset(ir_shooter.get_bullets_num());
+}
+
+static uint8_t get_gun_id(const std::array<uint8_t, 4>& pins){
+  RotaryDipSwitch rotary_dip_switch(pins);
+  return rotary_dip_switch.read();
 }
