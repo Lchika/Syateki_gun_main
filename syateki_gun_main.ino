@@ -128,6 +128,7 @@ static int get_root(void){
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
     "Host: " + host + "\r\n" + 
     "Connection: close\r\n\r\n");
+  reactor.display_wait();
   delay(1500);
 
   // 返ってきた情報の解析
@@ -160,9 +161,6 @@ static int get_root(void){
  * @return None
  */
 static int shoot(void){
-  //  センタサーバに発射を通知し、的の判定を確認
-  int target_num = get_root();
-  DebugPrint("target_num = %d", target_num);
   //  弾数管理を更新する
   if(!ir_shooter.shoot()){
     DebugPrint("<ERROR> remain bullets is None");
@@ -170,6 +168,10 @@ static int shoot(void){
   DebugPrint("# shoot (remain bullets = %d)", ir_shooter.get_bullets_num());
   //  発射関係の演出を行う
   reactor.react_to_fire(ir_shooter.get_bullets_num());
+  //  センタサーバに発射を通知し、的の判定を確認
+  int target_num = get_root();
+  DebugPrint("target_num = %d", target_num);
+  reactor.display_int(ir_shooter.get_bullets_num());
   return target_num;
 }
 

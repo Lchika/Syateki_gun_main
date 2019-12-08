@@ -41,11 +41,14 @@ private:
   //#pragma message "Using HWSPI"
   //Adafruit_SSD1331 display = Adafruit_SSD1331(&SPI, cs, dc, rst);
   static uint8_t constexpr TEXT_SIZE = 6;
+  void print(int16_t x, int16_t y, uint8_t font_size, uint16_t color, const String& msg);
 
 public:
   Display();
   void show_int(int16_t x, int16_t y, int disp_num);
   void clear_display();
+  void show_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg);
+  void show_important_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg);
 };
 
 #endif

@@ -77,3 +77,18 @@ void Display::show_int(int16_t x, int16_t y, int disp_num){
 void Display::clear_display(){
   display.clear();
 }
+
+void Display::print(int16_t x, int16_t y, uint8_t font_size, uint16_t color, const String& msg){
+  display.setCursor(x, y);
+  display.setTextColor(color);
+  display.setTextSize(font_size);
+  display.print(msg);
+}
+
+void Display::show_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg){
+  print(x, y, font_size, LED_BLUE_HIGH, msg);
+}
+
+void Display::show_important_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg){
+  print(x, y, font_size, LED_RED_HIGH, msg);
+}

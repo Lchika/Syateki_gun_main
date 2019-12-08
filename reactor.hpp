@@ -35,6 +35,7 @@ public:
   void vibrate(unsigned int time);
   void display_int(int disp_num);
   void reset(int initial_bullets_num);
+  void display_wait();
 };
 
 #endif
