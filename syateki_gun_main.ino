@@ -4,6 +4,7 @@
  */
 #include <Arduino.h>
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include "debug.h"
 #include "irShooter.hpp"
 #include "reactor.hpp"
@@ -113,46 +114,33 @@ static void initializePins(void){
  * @return None
  */
 static int get_root(void){
-  const char* host = "192.168.100.117";
-  
-  DebugPrint("connecting to ");
-  DebugPrint(host);
-  
-  WiFiClient client;
-  const int Port = 5000;
-  if (!client.connect(host, Port)) {
-    DebugPrint("connection failed");
-    return -1;
-  }
+  const String host = "192.168.100.117";
+  const int port = 5000;
+  HTTPClient http;
   String url = "/shoot/" + String(gun_id + 1);
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-    "Host: " + host + "\r\n" + 
-    "Connection: close\r\n\r\n");
+  
+  DebugPrint("[HTTP] begin host: %s, port: %d, url: %s", host.c_str(), port, url.c_str());
+  http.begin(host, port, url);
+  
   reactor.display_wait();
-  delay(1500);
-
-  // 返ってきた情報の解析
-  bool is_start_body = false;
-  String body = "";
-  while(client.available()){
-    String line = client.readStringUntil('\r');
-    line.trim();
-    DebugPrint(line.c_str());
-    if(is_start_body){
-      body += line;
+  int http_code = http.GET();
+  
+  String payload = "";
+  if(http_code > 0){
+    DebugPrint("[HTTP] GET %s, code: %d", url.c_str(), http_code);
+    if(http_code == HTTP_CODE_OK){
+      payload = http.getString();
+      DebugPrint("payload: %s", payload.c_str());
     }
-    if(line == ""){
-      is_start_body = true;
-    }
+  }else{
+    DebugPrint("[HTTP] GET %s, faild!", url.c_str());
+  } 
+  
+  http.end();
+  if(payload != ""){
+    return payload.toInt();
   }
-  DebugPrint("");
-  DebugPrint("body =");
-  DebugPrint(body.c_str());
-  DebugPrint("closing connection");
-  if(body == ""){
-    return -1;
-  }
-  return body.toInt();
+  return -1;
 }
 
 /**
