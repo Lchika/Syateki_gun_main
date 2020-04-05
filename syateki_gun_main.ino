@@ -31,7 +31,7 @@ static int constexpr TOTAL_RESET_TIME_LIMIT = 3000;   //  リセット待機用�
 
 //  変数宣言
 IrShooter ir_shooter(PIN_OUT_IR, MAGAGINE_CAPACITY, INITIAL_BULLETS_NUM);
-Reactor reactor;
+Reactor reactor(INITIAL_BULLETS_NUM);
 uint8_t gun_id = 0;
 
 //  関数定義
@@ -61,7 +61,7 @@ void setup(void) {
   } else {
     DebugPrint("WiFi connect process time out.");
   }
-  reactor.display_int(INITIAL_BULLETS_NUM);
+  //reactor.display_int(INITIAL_BULLETS_NUM);
 }
 
 /**
@@ -119,10 +119,10 @@ static int get_root(void){
   HTTPClient http;
   String url = "/shoot/" + String(gun_id + 1);
   
+  reactor.display_wait();
   DebugPrint("[HTTP] begin host: %s, port: %d, url: %s", host.c_str(), port, url.c_str());
   http.begin(host, port, url);
   
-  reactor.display_wait();
   int http_code = http.GET();
   
   String payload = "";
@@ -137,6 +137,8 @@ static int get_root(void){
   } 
   
   http.end();
+
+  reactor.reset_display(ir_shooter.get_bullets_num());
   if(payload != ""){
     return payload.toInt();
   }
@@ -159,7 +161,6 @@ static int shoot(void){
   //  センタサーバに発射を通知し、的の判定を確認
   int target_num = get_root();
   DebugPrint("target_num = %d", target_num);
-  reactor.display_int(ir_shooter.get_bullets_num());
   return target_num;
 }
 

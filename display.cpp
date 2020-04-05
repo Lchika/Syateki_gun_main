@@ -10,45 +10,6 @@
 #define mw 96
 #define mh 64
 
-// This could also be defined as display.color(255,0,0) but those defines
-// are meant to work for adafruit_gfx backends that are lacking color()
-#define LED_BLACK		0
-
-#define LED_RED_VERYLOW 	(3 <<  11)
-#define LED_RED_LOW 		(7 <<  11)
-#define LED_RED_MEDIUM 		(15 << 11)
-#define LED_RED_HIGH 		(31 << 11)
-
-#define LED_GREEN_VERYLOW	(1 <<  5)   
-#define LED_GREEN_LOW 		(15 << 5)  
-#define LED_GREEN_MEDIUM 	(31 << 5)  
-#define LED_GREEN_HIGH 		(63 << 5)  
-
-#define LED_BLUE_VERYLOW	3
-#define LED_BLUE_LOW 		7
-#define LED_BLUE_MEDIUM 	15
-#define LED_BLUE_HIGH 		31
-
-#define LED_ORANGE_VERYLOW	(LED_RED_VERYLOW + LED_GREEN_VERYLOW)
-#define LED_ORANGE_LOW		(LED_RED_LOW     + LED_GREEN_LOW)
-#define LED_ORANGE_MEDIUM	(LED_RED_MEDIUM  + LED_GREEN_MEDIUM)
-#define LED_ORANGE_HIGH		(LED_RED_HIGH    + LED_GREEN_HIGH)
-
-#define LED_PURPLE_VERYLOW	(LED_RED_VERYLOW + LED_BLUE_VERYLOW)
-#define LED_PURPLE_LOW		(LED_RED_LOW     + LED_BLUE_LOW)
-#define LED_PURPLE_MEDIUM	(LED_RED_MEDIUM  + LED_BLUE_MEDIUM)
-#define LED_PURPLE_HIGH		(LED_RED_HIGH    + LED_BLUE_HIGH)
-
-#define LED_CYAN_VERYLOW	(LED_GREEN_VERYLOW + LED_BLUE_VERYLOW)
-#define LED_CYAN_LOW		(LED_GREEN_LOW     + LED_BLUE_LOW)
-#define LED_CYAN_MEDIUM		(LED_GREEN_MEDIUM  + LED_BLUE_MEDIUM)
-#define LED_CYAN_HIGH		(LED_GREEN_HIGH    + LED_BLUE_HIGH)
-
-#define LED_WHITE_VERYLOW	(LED_RED_VERYLOW + LED_GREEN_VERYLOW + LED_BLUE_VERYLOW)
-#define LED_WHITE_LOW		(LED_RED_LOW     + LED_GREEN_LOW     + LED_BLUE_LOW)
-#define LED_WHITE_MEDIUM	(LED_RED_MEDIUM  + LED_GREEN_MEDIUM  + LED_BLUE_MEDIUM)
-#define LED_WHITE_HIGH		(LED_RED_HIGH    + LED_GREEN_HIGH    + LED_BLUE_HIGH)
-
 #include "display.hpp"
 
 Display::Display(){
@@ -67,10 +28,10 @@ Display::Display(){
   display.clear();
 };
 
-void Display::show_int(int16_t x, int16_t y, int disp_num){
+void Display::show_int(int16_t x, int16_t y, int disp_num, uint8_t font_size, uint16_t color){
   display.setCursor(x, y);
-  display.setTextColor(LED_GREEN_HIGH);
-  display.setTextSize(TEXT_SIZE);
+  display.setTextColor(color);
+  display.setTextSize(font_size);
   display.print(disp_num);
 }
 
@@ -85,10 +46,49 @@ void Display::print(int16_t x, int16_t y, uint8_t font_size, uint16_t color, con
   display.print(msg);
 }
 
-void Display::show_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg){
-  print(x, y, font_size, LED_BLUE_HIGH, msg);
+void Display::show_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg, uint16_t color){
+  print(x, y, font_size, color, msg);
 }
 
 void Display::show_important_msg(int16_t x, int16_t y, uint8_t font_size, const String& msg){
   print(x, y, font_size, LED_RED_HIGH, msg);
+}
+
+void Display::show_column_frame(uint8_t width, uint8_t columns, uint16_t color)
+{
+  display.fillRect(0, 0, mw, width, color);
+  display.fillRect(0, mh - width, mw, mh, color);
+  display.fillRect(0, 0, width, mh, color);
+  display.fillRect(mw - width, 0, mw, mh, color);
+  for(int i = 1; i < columns; i++){
+    uint8_t offset_x = i * ((mw - (1 + columns) * width) / columns);
+    display.fillRect(offset_x, 0, width, mh, color);
+  }
+}
+
+void Display::show_msg_on_column(uint8_t column, uint8_t column_width, uint8_t max_columns,
+  int16_t margin_x, int16_t margin_y, uint8_t font_size, const String& msg, uint16_t color)
+{
+  show_msg(column_width + column * ((mw - (1 + max_columns) * column_width) / max_columns) + margin_x,
+    column_width + margin_y, font_size, msg, color);
+}
+
+void Display::show_int_on_column(uint8_t column, uint8_t column_width, uint8_t max_columns,
+  int16_t margin_x, int16_t margin_y, uint8_t font_size, int16_t disp_num, uint16_t color)
+{
+  show_int(column_width + column * ((mw - (1 + max_columns) * column_width) / max_columns) + margin_x,
+    column_width + margin_y, disp_num, font_size, color);
+}
+
+void Display::clear_column_vertical(uint8_t column, uint8_t column_width, uint8_t max_columns,
+  int16_t y, bool isUpper)
+{
+  int16_t _y = column_width + y;
+  int16_t _h = mh - (1 + max_columns) * column_width - y;
+  if(isUpper){
+    _y = 0;
+    _h = y;
+  }
+  display.fillRect(column_width + column * ((mw - (1 + max_columns) * column_width) / max_columns),
+    _y, ((mw - (1 + max_columns) * column_width) / max_columns) - 2, _h, 0); // なぜかwを2引かないと消しすぎる
 }
